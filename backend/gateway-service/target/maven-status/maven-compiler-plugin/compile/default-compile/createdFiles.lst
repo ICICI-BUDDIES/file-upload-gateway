@@ -1,0 +1,12 @@
+com\example\gateway\controller\FileGatewayController.class
+com\example\gateway\dto\UploadResponse.class
+com\example\gateway\service\ExtractionService.class
+com\example\gateway\util\FileTypeUtil.class
+com\example\gateway\service\ExtractionService$1.class
+com\example\gateway\dto\StructureRules.class
+com\example\gateway\service\StructureValidationService.class
+com\example\gateway\service\TemplateLookupService.class
+com\example\gateway\service\FileValidationService.class
+com\example\gateway\dto\ExtractedFile.class
+com\example\gateway\GatewayServiceApplication.class
+com\example\gateway\dto\TemplateDefinition.class

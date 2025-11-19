@@ -1,0 +1,13 @@
+E:\webs\gateway-project-structure\backend\template-service\src\main\java\com\gateway\templateservice\dto\TemplateResponse.java
+E:\webs\gateway-project-structure\backend\template-service\src\main\java\com\gateway\templateservice\service\TemplateService.java
+E:\webs\gateway-project-structure\backend\template-service\src\main\java\com\gateway\templateservice\parser\TxtParser.java
+E:\webs\gateway-project-structure\backend\template-service\src\main\java\com\gateway\templateservice\dto\TemplateMetadataResponse.java
+E:\webs\gateway-project-structure\backend\template-service\src\main\java\com\gateway\templateservice\TemplateServiceApplication.java
+E:\webs\gateway-project-structure\backend\template-service\src\main\java\com\gateway\templateservice\model\TemplateEntity.java
+E:\webs\gateway-project-structure\backend\template-service\src\main\java\com\gateway\templateservice\storage\TemplateStorage.java
+E:\webs\gateway-project-structure\backend\template-service\src\main\java\com\gateway\templateservice\service\impl\TemplateServiceImpl.java
+E:\webs\gateway-project-structure\backend\template-service\src\main\java\com\gateway\templateservice\controller\TemplateController.java
+E:\webs\gateway-project-structure\backend\template-service\src\main\java\com\gateway\templateservice\parser\CSVParser.java
+E:\webs\gateway-project-structure\backend\template-service\src\main\java\com\gateway\templateservice\parser\PipeParser.java
+E:\webs\gateway-project-structure\backend\template-service\src\main\java\com\gateway\templateservice\model\StructureRules.java
+E:\webs\gateway-project-structure\backend\template-service\src\main\java\com\gateway\templateservice\parser\ExcelParser.java
