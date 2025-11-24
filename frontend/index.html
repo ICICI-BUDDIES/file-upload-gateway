@@ -14,8 +14,10 @@
 
             <!-- LEFT SECTION -->
             <div class="header-left">
-                <img class="icici-logo" src="ICICI_HeaderLogo (1).png" alt="ICICI Logo" />
-                <span class="app-name">TestApp1</span>
+                <a href="https://www.icicibank.com/" target="_blank" rel="noopener noreferrer">
+                    <img class="icici-logo" src="ICICI_HeaderLogo (1).png" alt="Organiser banner logo" />
+                </a>
+                <span class="app-name">File Upload Gateway</span>
             </div>
 
             <!-- RIGHT SECTION -->
@@ -23,7 +25,7 @@
 
                 <!-- 1800 1080 phone -->
                 <div class="support-block">
-                    <img src="Frame 1410086205-3.png" alt="Support Phone" />
+                    <img src="Frame 1410086205-3.png" alt="Support Phone" onclick="handlePhoneClick()" style="cursor: pointer;" title="Call or Copy: 1800 108 010" />
                 </div>
 
                 <!-- iPal Icon -->
@@ -33,7 +35,20 @@
 
                 <!-- Country Selector -->
                 <div class="country-select">
-                    <img src="Frame 157898-2.png" alt="Country Selector" />
+                    <select id="countrySelect" onchange="changeCountry(this.value)">
+                        <option value="india-en">🇮🇳 INDIA (ENGLISH)</option>
+                        <option value="india-hi">🇮🇳 INDIA (हिंदी)</option>
+                        <option value="bahrain">🇧🇭 BAHRAIN</option>
+                        <option value="canada">🇨🇦 CANADA</option>
+                        <option value="china">🇨🇳 CHINA</option>
+                        <option value="germany">🇩🇪 GERMANY</option>
+                        <option value="hongkong">🇭🇰 HONG KONG</option>
+                        <option value="singapore">🇸🇬 SINGAPORE</option>
+                        <option value="uk">🇬🇧 UNITED KINGDOM</option>
+                        <option value="usa">🇺🇸 UNITED STATES</option>
+                        <option value="uae">🇦🇪 DIFC-UAE</option>
+                        <option value="europe">🇪🇺 EUROPE</option>
+                    </select>
                 </div>
 
                 <!-- Login Button -->
@@ -63,13 +78,15 @@
 
             <!-- Step 2: Template Preview and Download -->
             <section id="templateSection" class="template-section" style="display: none;">
-                <h2>Template Preview</h2>
+                <div class="template-header">
+                    <h2>Template Preview</h2>
+                    <button id="downloadBtn" class="btn btn-download">Download Template</button>
+                </div>
                 <div class="template-info">
                     <div class="template-details">
                         <div id="templateName" class="template-name"></div>
                         <div id="headerPreview" class="header-preview"></div>
                     </div>
-                    <button id="downloadBtn" class="btn btn-download">Download Template</button>
                 </div>
                 <div id="downloadStatus" class="status-message"></div>
             </section>
@@ -99,8 +116,100 @@
         if (!appNameHash) {
             document.body.innerHTML = '<div style="text-align: center; margin-top: 2rem; color: #dc3545;"><h2>Error: Missing app parameter</h2><p>This utility must be called with an app parameter.</p></div>';
         }
+
+        // Handle phone click - dial on mobile, copy on desktop
+        function handlePhoneClick() {
+            const phoneNumber = '1800 108 010';
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                window.location.href = 'tel:+911800108010';
+            } else {
+                navigator.clipboard.writeText(phoneNumber).then(() => {
+                    showToast('Phone number copied to clipboard: ' + phoneNumber, 'success');
+                }).catch(() => {
+                    showToast('Phone number: ' + phoneNumber, 'info');
+                });
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast toast-${type} toast-show`;
+            
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
+
+        // Translation data
+        const translations = {
+            en: {
+                appName: 'File Upload Gateway',
+                selectTemplate: 'Select Template',
+                category: 'Category',
+                selectCategory: 'Select Category',
+                templatePreview: 'Template Preview',
+                downloadTemplate: 'Download Template',
+                uploadFile: 'Upload File',
+                selectFile: 'Select File',
+                uploadFileBtn: 'Upload File'
+            },
+            hi: {
+                appName: 'फाइल अपलोड गेटवे',
+                selectTemplate: 'टेम्पलेट चुनें',
+                category: 'श्रेणी',
+                selectCategory: 'श्रेणी चुनें',
+                templatePreview: 'टेम्पलेट पूर्वावलोकन',
+                downloadTemplate: 'टेम्पलेट डाउनलोड करें',
+                uploadFile: 'फाइल अपलोड करें',
+                selectFile: 'फाइल चुनें',
+                uploadFileBtn: 'फाइल अपलोड करें'
+            }
+        };
+
+        // Change country and language function
+        function changeCountry(country) {
+            let lang = 'en';
+            
+            if (country === 'india-hi') {
+                lang = 'hi';
+            } else {
+                lang = 'en';
+            }
+            
+            const t = translations[lang];
+            if (!t) return;
+
+            document.querySelector('.app-name').textContent = t.appName;
+            document.querySelector('.selection-section h2').textContent = t.selectTemplate;
+            document.querySelector('label[for="categorySelect"]').textContent = t.category;
+            document.querySelector('#categorySelect option[value=""]').textContent = t.selectCategory;
+            document.querySelector('.template-section h2').textContent = t.templatePreview;
+            document.querySelector('#downloadBtn').textContent = t.downloadTemplate;
+            document.querySelector('.upload-section h2').textContent = t.uploadFile;
+            document.querySelector('label[for="fileInput"]').textContent = t.selectFile;
+            document.querySelector('#uploadBtn').textContent = t.uploadFileBtn;
+
+            document.documentElement.lang = lang;
+            localStorage.setItem('selectedCountry', country);
+            
+            // Force chevron back to default after selection
+            document.getElementById('countrySelect').blur();
+        }
+
+        // Load saved country on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedCountry = localStorage.getItem('selectedCountry') || 'india-en';
+            document.getElementById('countrySelect').value = savedCountry;
+            changeCountry(savedCountry);
+        });
     </script>
     <script src="script.js"></script>
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
 </body>
 
 </html>

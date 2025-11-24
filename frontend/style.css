@@ -48,8 +48,10 @@ body {
 }
 
 .app-name {
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 300;
+    font-style: italic;
+    font-family: 'Mulish', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: white;
     white-space: nowrap;
 }
@@ -72,10 +74,67 @@ body {
     width: auto;
 }
 
-.country-select img {
+.country-select {
+    position: relative;
+}
+
+.country-select select {
     height: 44px;
-    width: auto;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #333;
+    padding: 8px 32px 8px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
     cursor: pointer;
+    outline: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 12"><path stroke="%23666" stroke-width="2" fill="none" d="M4 5l4 4 4-4"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px 12px;
+    min-width: 180px;
+    transition: all 0.1s ease;
+}
+
+.country-select select:focus {
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 12"><path stroke="%23666" stroke-width="2" fill="none" d="M4 7l4-4 4 4"/></svg>');
+}
+
+.country-select select:hover {
+    background-color: #f0f8ff;
+    border-color: #87ceeb;
+}
+
+.country-select select option {
+    background: white;
+    color: #333;
+    padding: 8px 12px;
+}
+
+select option {
+    background: white !important;
+    color: #333 !important;
+}
+
+select option:hover,
+select option:focus {
+    background: #bfdbfe !important;
+    color: #1e40af !important;
+}
+
+select option:checked,
+select option:selected {
+    background: #93c5fd !important;
+    color: white !important;
+}
+
+/* Force override for all browsers */
+#countrySelect option:hover,
+#categorySelect option:hover {
+    background-color: #bfdbfe !important;
+    color: #1e40af !important;
 }
 
 .login-btn img {
@@ -154,7 +213,6 @@ body {
 }
 
 select,
-input[type="file"],
 input[type="text"] {
     color: #b2b5b8;
     padding: 0.75rem;
@@ -162,6 +220,29 @@ input[type="text"] {
     border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
+}
+
+#categorySelect {
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 12"><path stroke="%23666" stroke-width="2" fill="none" d="M4 5l4 4 4-4"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px 12px;
+    padding-right: 40px;
+    transition: all 0.1s ease;
+}
+
+#categorySelect:focus {
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 12"><path stroke="%23666" stroke-width="2" fill="none" d="M4 7l4-4 4 4"/></svg>');
+}
+
+input[type="file"] {
+    color: #b2b5b8;
+    padding: 0.75rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
 }
 
 #categorySelect:valid {
@@ -188,6 +269,13 @@ input[type="file"]:focus,
 input[type="text"]:focus {
     outline: none;
     border-color: #f36f21;
+}
+
+.template-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
 }
 
 .template-info {
@@ -238,10 +326,7 @@ input[type="text"]:focus {
 }
 
 .template-table {
-    /* width: 100%;
-    border-collapse: separate; */
-    width: max-content;
-    /* Allows table to expand beyond container width */
+    width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
     margin-top: 1rem;
@@ -249,20 +334,18 @@ input[type="text"]:focus {
     background: #fafafa;
     border-radius: 8px;
     overflow: hidden;
+    table-layout: auto;
+    min-width: 100%;
 }
 
 .template-table th,
 .template-table td {
-    /* padding: 12px 16px; */
     text-align: left;
-    /* border: none; */
     border-bottom: 1px solid #e8e8e8;
-
-    padding: 5px 10px;
+    padding: 8px 12px;
     border: 1px solid #ddd;
-    white-space: nowrap;
-    /* Prevents text from wrapping */
-
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .template-table th {
@@ -327,9 +410,6 @@ input[type="text"]:focus {
 .btn-download {
     background: rgba(227,83,15,1);
     color: white;
-    margin-top: 1.5rem;
-    float: right;
-    clear: both;
 }
 
 .btn-download:hover:not(:disabled) {
@@ -487,6 +567,43 @@ input[type="text"]:focus {
 
 .btn-copy:hover {
     background: #b03912;
+}
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #333;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    max-width: 300px;
+    word-wrap: break-word;
+}
+
+.toast-show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast-success {
+    background: #28a745;
+}
+
+.toast-info {
+    background: #17a2b8;
+}
+
+.toast-error {
+    background: #dc3545;
 }
 
 @media (max-width: 768px) {

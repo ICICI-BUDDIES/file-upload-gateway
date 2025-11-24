@@ -263,15 +263,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 uploadStatus.className = "status-message error";
             })
             .finally(() => {
-                uploadBtn.disabled = false;
                 uploadBtn.textContent = "Upload File";
+                // Check if file is selected to determine disabled state
+                uploadBtn.disabled = fileInput.files.length === 0;
             });
     });
 
     // =============================
     // Event listeners
     // =============================
-    categorySelect.addEventListener("change", handleTemplateSelection);
+    categorySelect.addEventListener("change", () => {
+        handleTemplateSelection();
+        // Force chevron back to default after selection
+        categorySelect.blur();
+    });
 
     // Show/fade upload button based on file selection
     fileInput.addEventListener("change", () => {
