@@ -113,8 +113,12 @@ body {
 .selection-section,
 .template-section,
 .upload-section {
-    padding: 2rem;
-    border-bottom: 1px solid #eee;
+    /* padding: 2rem; */
+    padding-right: 2rem;
+    padding-left: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    /* border-bottom: 1px solid #eee; */
 }
 
 .upload-section {
@@ -125,7 +129,7 @@ body {
 .template-section h2,
 .upload-section h2 {
     color: rgba(51, 54, 56, 1);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     font-size: 1.3rem;
     font-weight: 500;
 }
@@ -134,7 +138,7 @@ body {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.5rem;
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
     max-width: 400px;
 }
 
@@ -169,7 +173,7 @@ input[type="text"]:focus {
 
 .template-info {
     background: #FFF3E0;
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 8px;
     border: 1px solid #FFCC80;
 }
@@ -182,7 +186,7 @@ input[type="text"]:focus {
     font-size: 1.1rem;
     font-weight: 600;
     color: #333;
-    margin-bottom: 0.5rem;
+    /* margin-bottom: 0.5rem; */
 }
 
 .header-preview {
@@ -208,14 +212,17 @@ input[type="text"]:focus {
 
 .table-container {
     width: 100%;
-    overflow-x: auto;     /* Enables horizontal scroll */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+    overflow-x: auto;
+    /* Enables horizontal scroll */
+    -webkit-overflow-scrolling: touch;
+    /* Smooth scrolling on mobile */
 }
 
 .template-table {
     /* width: 100%;
     border-collapse: separate; */
-    width: max-content;   /* Allows table to expand beyond container width */
+    width: max-content;
+    /* Allows table to expand beyond container width */
     border-collapse: collapse;
     border-spacing: 0;
     margin-top: 1rem;
@@ -232,9 +239,10 @@ input[type="text"]:focus {
     /* border: none; */
     border-bottom: 1px solid #e8e8e8;
 
-    padding: 8px 12px;
+    padding: 5px 10px;
     border: 1px solid #ddd;
-    white-space: nowrap;  /* Prevents text from wrapping */
+    white-space: nowrap;
+    /* Prevents text from wrapping */
 
 }
 
@@ -288,7 +296,7 @@ input[type="text"]:focus {
 }
 
 .btn {
-    padding: 0.75rem 1.5rem;
+    padding: 1rem 1.5rem;
     border: none;
     border-radius: 8px;
     font-size: 1rem;
@@ -300,7 +308,7 @@ input[type="text"]:focus {
 .btn-download {
     background: #F57C00;
     color: white;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     float: right;
     clear: both;
 }
@@ -350,7 +358,7 @@ input[type="text"]:focus {
 .error-message {
     color: #dc3545;
     font-size: 0.9rem;
-    margin-top: 0.5rem;
+    /* margin-top: 0.5rem; */
 }
 
 .status-message {
