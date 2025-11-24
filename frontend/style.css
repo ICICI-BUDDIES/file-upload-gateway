@@ -152,7 +152,7 @@ body {
 select,
 input[type="file"],
 input[type="text"] {
-    color: rgba(125, 130, 135, 1);
+    color: #b2b5b8;
     padding: 0.75rem;
     border: 2px solid #e1e5e9;
     border-radius: 8px;
@@ -160,11 +160,30 @@ input[type="text"] {
     transition: border-color 0.3s ease;
 }
 
+#categorySelect:valid {
+    color: #6F6F6F;
+}
+
+#categorySelect option {
+    color: #6F6F6F;
+    outline: none;
+}
+
+#categorySelect option:hover {
+    background-color: rgba(173, 216, 230, 0.3);
+}
+
+select:disabled,
+input[type="file"]:disabled,
+input[type="text"]:disabled {
+    color: #b2b5b8;
+}
+
 select:focus,
 input[type="file"]:focus,
 input[type="text"]:focus {
     outline: none;
-    border-color: #F47920;
+    border-color: #f36f21;
 }
 
 .template-info {
