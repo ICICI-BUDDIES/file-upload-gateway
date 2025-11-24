@@ -252,11 +252,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     console.log("Extracted JSON Data:", result.data);
                     console.log("JSON as String:", JSON.stringify(result.data, null, 2));
                 }
-
-                // Clear form and fade upload button
+                
+                // Clear form and disable upload button
                 fileInput.value = "";
-                uploadBtn.classList.remove("btn-active");
-                uploadBtn.classList.add("btn-faded");
+                uploadBtn.disabled = true;
             })
             .catch((err) => {
                 console.error("Upload error:", err);
@@ -277,11 +276,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Show/fade upload button based on file selection
     fileInput.addEventListener("change", () => {
         if (fileInput.files.length > 0) {
-            uploadBtn.classList.remove("btn-faded");
-            uploadBtn.classList.add("btn-active");
+            uploadBtn.disabled = false;
         } else {
-            uploadBtn.classList.remove("btn-active");
-            uploadBtn.classList.add("btn-faded");
+            uploadBtn.disabled = true;
         }
     });
 

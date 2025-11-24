@@ -306,7 +306,7 @@ input[type="text"]:focus {
 }
 
 .btn-download {
-    background: #F57C00;
+    background: rgba(227,83,15,1);
     color: white;
     margin-top: 1.5rem;
     float: right;
@@ -314,7 +314,7 @@ input[type="text"]:focus {
 }
 
 .btn-download:hover:not(:disabled) {
-    background: #E65100;
+    background: #F57C00;
     transform: translateY(-1px);
 }
 
@@ -329,31 +329,28 @@ input[type="text"]:focus {
 }
 
 .btn-upload {
-    background: #F47920;
+    background: rgba(227,83,15,1);
     color: white;
     justify-self: start;
 }
 
 .btn-upload:hover:not(:disabled) {
-    background: #E65100;
+    background: #F57C00;
     transform: translateY(-1px);
 }
 
 .btn:disabled {
-    opacity: 0.6;
+    /* opacity: 0.6; */
     cursor: not-allowed;
     transform: none;
+    background: #b2b5b8 !important;
+    cursor: not-allowed;
+    opacity: 1;  /* ensures full color, not faded */
+
+
 }
 
-.btn-faded {
-    opacity: 0.3;
-    pointer-events: none;
-}
 
-.btn-active {
-    opacity: 1;
-    pointer-events: auto;
-}
 
 .error-message {
     color: #dc3545;
