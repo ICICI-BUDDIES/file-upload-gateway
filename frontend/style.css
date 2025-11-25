@@ -484,6 +484,7 @@ input[type="text"]:focus {
     display: grid;
     gap: 1.5rem;
     max-width: 500px;
+    margin: 0 auto;
 }
 
 .registration-form small {
