@@ -35,6 +35,11 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public RegistrationResponse registerApp(RegistrationRequest request, MultipartFile templateFile) {
+        return registerApp(request, templateFile, null);
+    }
+    
+    @Override
+    public RegistrationResponse registerApp(RegistrationRequest request, MultipartFile templateFile, String headerConfig) {
         try {
             String appNameHash = hashUtil.hashAppName(request.getAppName());
             
@@ -42,11 +47,11 @@ public class TemplateServiceImpl implements TemplateService {
             if (storage.existsByAppHashAndCategory(appNameHash, request.getCategory())) {
                 // Update existing template
                 TemplateEntity existingTemplate = storage.findByAppHashAndCategory(appNameHash, request.getCategory());
-                updateTemplate(existingTemplate, templateFile, request);
+                updateTemplate(existingTemplate, templateFile, request, headerConfig);
                 return new RegistrationResponse(true, "Template updated successfully", appNameHash);
             } else {
                 // Create new template
-                TemplateEntity newTemplate = createTemplate(templateFile, request, appNameHash);
+                TemplateEntity newTemplate = createTemplate(templateFile, request, appNameHash, headerConfig);
                 storage.save(newTemplate, templateFile.getBytes());
                 return new RegistrationResponse(true, "App registered successfully", appNameHash);
             }
@@ -78,7 +83,18 @@ public class TemplateServiceImpl implements TemplateService {
             Map<String, Object> metaMap = mapper.readValue(t.getMetadataJson(), Map.class);
             List<String> headers = (List<String>) metaMap.get("headers");
             resp.setHeaders(headers);
-            resp.setStructureRules((Map<String, Object>) metaMap.get("rules"));
+            
+            // Include all metadata as structure rules (rules + fieldConfig)
+            Map<String, Object> allRules = new HashMap<>();
+            Map<String, Object> basicRules = (Map<String, Object>) metaMap.get("rules");
+            if (basicRules != null) {
+                allRules.putAll(basicRules);
+            }
+            // Add fieldConfig if it exists
+            if (metaMap.containsKey("fieldConfig")) {
+                allRules.put("fieldConfig", metaMap.get("fieldConfig"));
+            }
+            resp.setStructureRules(allRules);
             return resp;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -243,6 +259,10 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     private Map<String, Object> buildMetadata(Object parsed) {
+        return buildMetadata(parsed, null);
+    }
+    
+    private Map<String, Object> buildMetadata(Object parsed, String headerConfig) {
         Map<String, Object> meta = new LinkedHashMap<>();
         List<Map<String, String>> rows = (List<Map<String, String>>) parsed;
         List<String> headers = new ArrayList<>();
@@ -257,10 +277,25 @@ public class TemplateServiceImpl implements TemplateService {
         rules.put("allowExtraColumns", false);
 
         meta.put("rules", rules);
+        
+        // Add header configuration if provided
+        if (headerConfig != null && !headerConfig.trim().isEmpty()) {
+            try {
+                Map<String, Object> config = mapper.readValue(headerConfig, Map.class);
+                meta.put("fieldConfig", config);
+            } catch (Exception e) {
+                System.err.println("Failed to parse header config: " + e.getMessage());
+            }
+        }
+        
         return meta;
     }
 
     private TemplateEntity createTemplate(MultipartFile file, RegistrationRequest request, String appNameHash) throws Exception {
+        return createTemplate(file, request, appNameHash, null);
+    }
+    
+    private TemplateEntity createTemplate(MultipartFile file, RegistrationRequest request, String appNameHash, String headerConfig) throws Exception {
         String ext = getExt(file.getOriginalFilename());
         System.out.println("📁 Creating template - File: " + file.getOriginalFilename() + ", Extension: " + ext);
         
@@ -281,11 +316,16 @@ public class TemplateServiceImpl implements TemplateService {
             System.out.println("✅ Parsing successful");
             
             entity.setExtractedJson(mapper.writeValueAsString(parsed));
-            Map<String, Object> meta = buildMetadata(parsed);
+            Map<String, Object> meta = buildMetadata(parsed, headerConfig);
             entity.setMetadataJson(mapper.writeValueAsString(meta));
             
+            // Validate template against its own field configuration
+            if (headerConfig != null && !headerConfig.trim().isEmpty()) {
+                validateTemplateAgainstFieldConfig(parsed, headerConfig);
+            }
+            
         } catch (Exception e) {
-            System.err.println("❌ Parsing failed: " + e.getMessage());
+            System.err.println("❌ Template validation failed: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
@@ -294,6 +334,10 @@ public class TemplateServiceImpl implements TemplateService {
     }
     
     private void updateTemplate(TemplateEntity existingTemplate, MultipartFile file, RegistrationRequest request) throws Exception {
+        updateTemplate(existingTemplate, file, request, null);
+    }
+    
+    private void updateTemplate(TemplateEntity existingTemplate, MultipartFile file, RegistrationRequest request, String headerConfig) throws Exception {
         String ext = getExt(file.getOriginalFilename());
         existingTemplate.setEndpoint(request.getEndpoint());
         existingTemplate.setOriginalFileName(file.getOriginalFilename());
@@ -303,8 +347,13 @@ public class TemplateServiceImpl implements TemplateService {
         Object parsed = parseBytes(bytes, ext);
         existingTemplate.setExtractedJson(mapper.writeValueAsString(parsed));
 
-        Map<String, Object> meta = buildMetadata(parsed);
+        Map<String, Object> meta = buildMetadata(parsed, headerConfig);
         existingTemplate.setMetadataJson(mapper.writeValueAsString(meta));
+        
+        // Validate template against its own field configuration
+        if (headerConfig != null && !headerConfig.trim().isEmpty()) {
+            validateTemplateAgainstFieldConfig(parsed, headerConfig);
+        }
         
         storage.save(existingTemplate, bytes);
     }
@@ -313,5 +362,138 @@ public class TemplateServiceImpl implements TemplateService {
         if (filename == null || !filename.contains("."))
             return "";
         return filename.substring(filename.lastIndexOf('.') + 1);
+    }
+    
+    @Override
+    public List<String> extractHeaders(MultipartFile file) {
+        try {
+            String ext = getExt(file.getOriginalFilename());
+            System.out.println("🔍 Extracting headers from file: " + file.getOriginalFilename() + ", extension: " + ext);
+            
+            if (!ext.equals("csv") && !ext.equals("xlsx")) {
+                throw new RuntimeException("Only CSV and XLSX files are supported for header extraction");
+            }
+            
+            byte[] bytes = file.getBytes();
+            Object parsed = parseBytes(bytes, ext);
+            
+            List<Map<String, String>> rows = (List<Map<String, String>>) parsed;
+            if (rows.isEmpty()) {
+                System.out.println("⚠️ No rows found in parsed data");
+                return new ArrayList<>();
+            }
+            
+            List<String> headers = new ArrayList<>(rows.get(0).keySet());
+            System.out.println("📋 Extracted headers: " + headers);
+            return headers;
+        } catch (Exception e) {
+            System.err.println("❌ Failed to extract headers: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to extract headers: " + e.getMessage());
+        }
+    }
+    
+    private void validateTemplateAgainstFieldConfig(Object parsed, String headerConfig) throws Exception {
+        Map<String, Object> fieldConfig = mapper.readValue(headerConfig, Map.class);
+        List<Map<String, String>> rows = (List<Map<String, String>>) parsed;
+        
+        if (rows.isEmpty()) {
+            return; // No data to validate
+        }
+        
+        List<String> validationErrors = new ArrayList<>();
+        
+        // Validate each row against field configuration
+        for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++) {
+            Map<String, String> row = rows.get(rowIndex);
+            
+            for (Map.Entry<String, Object> configEntry : fieldConfig.entrySet()) {
+                String fieldName = configEntry.getKey();
+                Map<String, Object> fieldRules = (Map<String, Object>) configEntry.getValue();
+                
+                String fieldValue = row.get(fieldName);
+                String error = validateTemplateField(fieldName, fieldValue, fieldRules, rowIndex + 1);
+                
+                if (error != null) {
+                    validationErrors.add(error);
+                    if (validationErrors.size() >= 10) break; // Limit errors
+                }
+            }
+            if (validationErrors.size() >= 10) break;
+        }
+        
+        if (!validationErrors.isEmpty()) {
+            String errorMessage = "Template validation failed. The template file does not meet the field requirements you specified:\n" + 
+                                String.join("\n", validationErrors.subList(0, Math.min(5, validationErrors.size())));
+            if (validationErrors.size() > 5) {
+                errorMessage += "\n... and " + (validationErrors.size() - 5) + " more validation errors";
+            }
+            errorMessage += "\n\nPlease upload a template file that matches your field configuration or modify your field requirements.";
+            throw new RuntimeException(errorMessage);
+        }
+    }
+    
+    @Override
+    public boolean validateTemplateAgainstFieldConfig(MultipartFile file, String fieldConfig) {
+        try {
+            String ext = getExt(file.getOriginalFilename());
+            byte[] bytes = file.getBytes();
+            Object parsed = parseBytes(bytes, ext);
+            validateTemplateAgainstFieldConfig(parsed, fieldConfig);
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+    
+    private String validateTemplateField(String fieldName, String value, Map<String, Object> rules, int rowNumber) {
+        boolean isRequired = (Boolean) rules.getOrDefault("required", false);
+        boolean nullAllowed = (Boolean) rules.getOrDefault("nullAllowed", true);
+        boolean specialCharsAllowed = (Boolean) rules.getOrDefault("specialChars", true);
+        String fieldType = (String) rules.getOrDefault("fieldType", "string");
+        
+        boolean isEmpty = value == null || value.trim().isEmpty();
+        
+        // Required field validation
+        if (isRequired && isEmpty) {
+            return String.format("Row %d: Field '%s' is required but is empty in template", rowNumber, fieldName);
+        }
+        
+        // Null allowed validation
+        if (!nullAllowed && isEmpty) {
+            return String.format("Row %d: Field '%s' cannot be null but is empty in template", rowNumber, fieldName);
+        }
+        
+        if (isEmpty) {
+            return null; // Skip other validations for empty fields
+        }
+        
+        String trimmedValue = value.trim();
+        
+        // Field type validation
+        switch (fieldType.toLowerCase()) {
+            case "number":
+                if (!trimmedValue.matches("^-?\\d+(\\.\\d+)?$")) {
+                    return String.format("Row %d: Field '%s' must be a number but contains '%s' in template", rowNumber, fieldName, value);
+                }
+                break;
+            case "email":
+                if (!trimmedValue.matches("^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$")) {
+                    return String.format("Row %d: Field '%s' must be a valid email but contains '%s' in template", rowNumber, fieldName, value);
+                }
+                break;
+            case "date":
+                if (!trimmedValue.matches("^\\d{4}-\\d{2}-\\d{2}$|^\\d{2}/\\d{2}/\\d{4}$|^\\d{2}-\\d{2}-\\d{4}$")) {
+                    return String.format("Row %d: Field '%s' must be a valid date but contains '%s' in template", rowNumber, fieldName, value);
+                }
+                break;
+        }
+        
+        // Special characters validation (skip for number fields)
+        if (!specialCharsAllowed && !fieldType.toLowerCase().equals("number") && trimmedValue.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            return String.format("Row %d: Field '%s' contains special characters which are not allowed in template", rowNumber, fieldName);
+        }
+        
+        return null;
     }
 }

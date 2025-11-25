@@ -18,8 +18,8 @@ public class StructureValidationService {
         if (!rules.isAllowExtraColumns()) {
             if (templateHeaders.size() != actualHeaders.size()) {
                 throw new IllegalArgumentException(
-                        "Column count mismatch. Expected " + templateHeaders.size() +
-                                ", got " + actualHeaders.size()
+                        String.format("Column count mismatch. Expected %d columns but found %d columns. Please ensure your file has exactly the required columns.", 
+                        templateHeaders.size(), actualHeaders.size())
                 );
             }
         }
@@ -32,8 +32,8 @@ public class StructureValidationService {
 
                 if (!expected.equalsIgnoreCase(actual)) {
                     throw new IllegalArgumentException(
-                            "Header mismatch at column " + (i + 1) +
-                                    ". Expected: '" + expected + "', got: '" + actual + "'"
+                            String.format("Header validation failed at column %d. Expected '%s' but found '%s'. Please check your column headers match the template exactly.", 
+                            (i + 1), expected, actual)
                     );
                 }
             }
@@ -41,7 +41,9 @@ public class StructureValidationService {
             // If order not strict, ensure all required headers exist
             for (String expected : templateHeaders) {
                 if (!actualHeaders.contains(expected)) {
-                    throw new IllegalArgumentException("Missing required column: " + expected);
+                    throw new IllegalArgumentException(
+                        String.format("Missing required column '%s'. Please add this column to your file.", expected)
+                    );
                 }
             }
         }
@@ -52,13 +54,15 @@ public class StructureValidationService {
 
         if (rowCount < rules.getMinRows()) {
             throw new IllegalArgumentException(
-                    "Row count too small. Minimum allowed: " + rules.getMinRows()
+                    String.format("File has too few data rows. Found %d rows but minimum required is %d rows. Please add more data to your file.", 
+                    rowCount, rules.getMinRows())
             );
         }
 
         if (rowCount > rules.getMaxRows()) {
             throw new IllegalArgumentException(
-                    "Row count too large. Maximum allowed: " + rules.getMaxRows()
+                    String.format("File has too many data rows. Found %d rows but maximum allowed is %d rows. Please split your data into smaller files.", 
+                    rowCount, rules.getMaxRows())
             );
         }
     }
