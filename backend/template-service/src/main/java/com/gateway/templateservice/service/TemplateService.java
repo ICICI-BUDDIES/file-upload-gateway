@@ -15,6 +15,7 @@ import java.util.List;
 public interface TemplateService {
     // New registration methods
     RegistrationResponse registerApp(RegistrationRequest request, MultipartFile templateFile);
+    RegistrationResponse registerApp(RegistrationRequest request, MultipartFile templateFile, String headerConfig);
     
     // App-specific template methods
     List<String> getCategoriesByAppHash(String appNameHash);
@@ -37,4 +38,6 @@ public interface TemplateService {
     TemplateEntity getByAppAndCategory(String appNameHash, String category);
     void delete(String id);
     boolean pushMetadata(String id, String url);
+    List<String> extractHeaders(MultipartFile file);
+    boolean validateTemplateAgainstFieldConfig(MultipartFile file, String fieldConfig);
 }

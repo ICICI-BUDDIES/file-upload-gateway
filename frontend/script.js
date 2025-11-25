@@ -236,14 +236,85 @@ document.addEventListener("DOMContentLoaded", () => {
             body: formData
         })
             .then(async (response) => {
-                const result = await response.json().catch(() => ({ message: "Upload completed" }));
+                let result;
+                try {
+                    result = await response.json();
+                } catch (e) {
+                    // If JSON parsing fails, try to get text response
+                    const textResponse = await response.text();
+                    console.error("Server response (not JSON):", textResponse);
+                    result = { message: textResponse || "Server error occurred" };
+                }
+                
+                console.log("Response status:", response.status);
+                console.log("Response data:", result);
 
                 if (!response.ok) {
-                    throw new Error(result.message || "Upload failed");
+                    // Extract and categorize error message
+                    let errorMessage = result.message || "Upload failed";
+                    let errorCategory = "Upload Error";
+                    
+                    // Check if it's actually a success with notification failure
+                    if (errorMessage.includes('File validated but failed to notify application') || 
+                        errorMessage.includes('converted to json but failed to notify application')) {
+                        // This is actually a success - data was processed correctly
+                        const successMessage = "File uploaded and validated successfully! (Note: Application notification failed but your data was processed correctly)";
+                        uploadStatus.textContent = successMessage;
+                        uploadStatus.className = "status-message success";
+                        showToast(successMessage, 'success');
+                        
+                        // Log the JSON data to console
+                        console.log("=== UPLOAD RESPONSE ===");
+                        console.log("Full Response:", result);
+                        if (result.data) {
+                            console.log("Extracted JSON Data:", result.data);
+                            console.log("JSON as String:", JSON.stringify(result.data, null, 2));
+                        }
+                        
+                        // Clear form and disable upload button
+                        fileInput.value = "";
+                        uploadBtn.disabled = true;
+                        return; // Don't throw error
+                    }
+                    
+                    // Categorize different types of errors
+                    if (errorMessage.includes('Field validation failed:')) {
+                        errorCategory = "❌ Data Validation Failed";
+                        const lines = errorMessage.split('\n');
+                        const errorLines = lines.slice(1, 4); // Skip header, show first 3 errors
+                        errorMessage = `${errorCategory}\n${errorLines.join('\n')}`;
+                        if (lines.length > 4) {
+                            errorMessage += '\n... and ' + (lines.length - 4) + ' more validation errors';
+                        }
+                    } else if (errorMessage.includes('File size exceeds')) {
+                        errorCategory = "📁 File Size Error";
+                        errorMessage = `${errorCategory}\n${errorMessage}`;
+                    } else if (errorMessage.includes('File format mismatch') || errorMessage.includes('Unsupported file type')) {
+                        errorCategory = "📄 File Format Error";
+                        errorMessage = `${errorCategory}\n${errorMessage}`;
+                    } else if (errorMessage.includes('Header validation failed') || errorMessage.includes('Column mismatch')) {
+                        errorCategory = "📋 Template Structure Error";
+                        errorMessage = `${errorCategory}\n${errorMessage}`;
+                    } else if (errorMessage.includes('Template not found') || errorMessage.includes('Template metadata is null')) {
+                        errorCategory = "🔍 Template Not Found";
+                        errorMessage = `${errorCategory}\nThe selected template is not available. Please contact support.`;
+                    } else if (errorMessage.includes('Application') && errorMessage.includes('not allowed')) {
+                        errorCategory = "🚫 Access Denied";
+                        errorMessage = `${errorCategory}\n${errorMessage}`;
+                    } else {
+                        errorCategory = "⚠️ Upload Failed";
+                        errorMessage = `${errorCategory}\n${errorMessage}`;
+                    }
+                    
+                    throw new Error(errorMessage);
                 }
 
-                uploadStatus.textContent = result.message || "File uploaded and validated successfully!";
+                const successMessage = result.message || "File uploaded and validated successfully!";
+                uploadStatus.textContent = successMessage;
                 uploadStatus.className = "status-message success";
+                
+                // Show success toast
+                showToast(successMessage, 'success');
 
                 // Display the actual JSON response data
                 console.log("=== UPLOAD RESPONSE ===");
@@ -259,8 +330,12 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch((err) => {
                 console.error("Upload error:", err);
-                uploadStatus.textContent = err.message || "Upload failed. Please try again.";
+                const errorMessage = err.message || "Upload failed. Please try again.";
+                uploadStatus.textContent = errorMessage;
                 uploadStatus.className = "status-message error";
+                
+                // Show failure toast with detailed error
+                showToast(errorMessage, 'error');
             })
             .finally(() => {
                 uploadBtn.textContent = "Upload File";

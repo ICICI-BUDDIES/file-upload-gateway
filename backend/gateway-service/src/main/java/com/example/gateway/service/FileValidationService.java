@@ -26,26 +26,27 @@ public class FileValidationService {
 
         // 1. File must exist
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("Uploaded file is empty.");
+            throw new IllegalArgumentException("No file was uploaded. Please select a file and try again.");
         }
 
         // 2. Valid application (skip validation if wildcard is set)
         if (application == null) {
-            throw new IllegalArgumentException("Application cannot be null.");
+            throw new IllegalArgumentException("Application identifier is missing. Please contact support.");
         }
         
         if (!allowedApps.contains("*") && !allowedApps.contains(application)) {
-            throw new IllegalArgumentException("Application '" + application + "' is not allowed.");
+            throw new IllegalArgumentException("Application '" + application + "' is not authorized to upload files. Please contact your administrator.");
         }
 
         // 3. File size in MB
         long fileSizeBytes = file.getSize();
         long maxBytes = maxFileMb * 1024L * 1024L;
+        double fileSizeMB = fileSizeBytes / (1024.0 * 1024.0);
 
         if (fileSizeBytes > maxBytes) {
             throw new IllegalArgumentException(
-                    "File size exceeds the allowed limit of " + maxFileMb + " MB. " +
-                    "Uploaded size = " + (fileSizeBytes / (1024 * 1024)) + " MB."
+                    String.format("File size exceeds the allowed limit of %d MB. Your file is %.1f MB. Please reduce the file size and try again.", 
+                    maxFileMb, fileSizeMB)
             );
         }
 
@@ -55,8 +56,8 @@ public class FileValidationService {
         if (declaredFormat != null && !declaredFormat.trim().isEmpty()) {
             if (!declaredFormat.equalsIgnoreCase(detected)) {
                 throw new IllegalArgumentException(
-                        "File format mismatch. Expected '" + declaredFormat +
-                                "', detected '" + detected + "'."
+                        String.format("File format mismatch. Expected '%s' file but received '%s'. Please upload the correct file format.", 
+                        declaredFormat.toUpperCase(), detected.toUpperCase())
                 );
             }
         }

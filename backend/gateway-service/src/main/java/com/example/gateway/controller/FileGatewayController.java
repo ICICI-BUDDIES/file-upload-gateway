@@ -7,6 +7,7 @@ import com.example.gateway.dto.UploadResponse;
 
 import com.example.gateway.service.EndpointNotificationService;
 import com.example.gateway.service.ExtractionService;
+import com.example.gateway.service.FieldValidationService;
 import com.example.gateway.service.FileValidationService;
 import com.example.gateway.service.StructureValidationService;
 import com.example.gateway.service.TemplateLookupService;
@@ -17,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +41,9 @@ public class FileGatewayController {
     
     @Autowired
     private EndpointNotificationService endpointNotificationService;
+    
+    @Autowired
+    private FieldValidationService fieldValidationService;
 
 
     /** ---------------------------------------------------------
@@ -128,6 +134,29 @@ public class FileGatewayController {
                     extracted.getRows(),
                     rules
             );
+            
+            // STEP 4C: Validate field requirements (if field configuration exists)
+            Map<String, Object> fieldConfig = null;
+            if (template.getStructureRules() != null) {
+                fieldConfig = (Map<String, Object>) template.getStructureRules().get("fieldConfig");
+            }
+            if (fieldConfig != null) {
+                // Convert List<Map<String, Object>> to List<Map<String, String>>
+                List<Map<String, String>> stringRows = new ArrayList<>();
+                for (Map<String, Object> row : extracted.getRows()) {
+                    Map<String, String> stringRow = new HashMap<>();
+                    for (Map.Entry<String, Object> entry : row.entrySet()) {
+                        stringRow.put(entry.getKey(), entry.getValue() != null ? entry.getValue().toString() : null);
+                    }
+                    stringRows.add(stringRow);
+                }
+                
+                List<String> fieldErrors = fieldValidationService.validateFields(stringRows, fieldConfig);
+                if (!fieldErrors.isEmpty()) {
+                    String errorMessage = "Field validation failed:\n" + String.join("\n", fieldErrors);
+                    throw new IllegalArgumentException(errorMessage);
+                }
+            }
 
             // STEP 5: Send data to registered app endpoint
             boolean notificationSent = endpointNotificationService.sendDataToAppEndpoint(
