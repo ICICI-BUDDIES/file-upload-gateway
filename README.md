@@ -116,14 +116,29 @@ template.service.url=http://localhost:8081
 
 ## 📋 Features
 
+### Field Validation System
+- **Dynamic Configuration**: Configure validation rules during template registration
+- **Field Types**: Support for string, integer, decimal, email, and date fields
+- **Validation Rules**: Required fields, null value handling, special character restrictions
+- **Length Validation**: Minimum and maximum character length controls
+- **Performance Optimized**: Early termination for large files with many errors
+- **User-Friendly Errors**: Clear, categorized error messages with row-level details
+- **Excel Compatibility**: Proper handling of Excel numeric formats (8000 vs 8000.0)
+
 ### Template Management
 - **Multi-format Support**: CSV, Excel (.xlsx), TXT, Pipe-delimited
+- **Dynamic Field Configuration**: Configurable validation rules per field
+- **Field Types**: String, Integer, Decimal, Email, Date validation
+- **Advanced Validation**: Required fields, null handling, special characters, min/max length
 - **Structure Validation**: Column headers, row counts, data types
 - **Template Preview**: Real-time table preview with sample data
+- **Template Self-Validation**: Ensures template files meet their own field requirements
 - **Version Control**: Template versioning and history
 
 ### File Processing
 - **Upload Validation**: File size, format, and structure validation
+- **Field Validation**: Dynamic field configuration with data type validation
+- **Template Self-Validation**: Templates validate against their own field requirements
 - **Data Extraction**: Automatic parsing based on template rules
 - **Error Handling**: Detailed validation messages and error reporting
 - **Progress Tracking**: Real-time upload and processing status
@@ -236,7 +251,7 @@ mvn test
 | Format | Extension | Features |
 |--------|-----------|----------|
 | CSV | `.csv` | Comma-separated, custom delimiters |
-| Excel | `.xlsx` | Multiple sheets, rich formatting |
+| Excel | `.xlsx` | Multiple sheets, rich formatting, proper numeric handling |
 | Text | `.txt` | Plain text, configurable separators |
 | Pipe | `.txt` | Pipe-delimited format |
 
@@ -252,12 +267,15 @@ The system provides comprehensive error handling:
 ## 🔄 Workflow
 
 1. **App Registration**: Register your application to get a unique hash
-2. **Template Selection**: Choose from available template categories
-3. **Template Download**: Download the template file for your data
-4. **File Preparation**: Prepare your data according to template structure
-5. **File Upload**: Upload and validate your file
-6. **Data Processing**: System extracts and validates data
-7. **Integration**: Validated data is sent to your application endpoint
+2. **Template Configuration**: Configure field validation rules and requirements
+3. **Template Upload**: Upload template file with field configuration
+4. **Template Validation**: System validates template against its own rules
+5. **Template Selection**: Choose from available template categories
+6. **Template Download**: Download the validated template file
+7. **File Preparation**: Prepare your data according to template structure
+8. **File Upload**: Upload and validate your file against template rules
+9. **Data Processing**: System extracts and validates data with detailed error reporting
+10. **Integration**: Validated data is sent to your application endpoint
 
 ## 📈 Performance
 
@@ -291,6 +309,10 @@ For technical support or questions:
 - **v1.1.0**: Added Excel support and improved validation
 - **v1.2.0**: Enhanced UI and mobile responsiveness
 - **v1.3.0**: Multi-tenant support and webhook integration
+- **v1.4.0**: Dynamic field validation system with configurable rules
+- **v1.4.1**: Template self-validation and enhanced error handling
+- **v1.4.2**: Excel parser improvements for integer/decimal handling
+- **v1.4.3**: Min/max length validation and field type separation
 
 ---
 
