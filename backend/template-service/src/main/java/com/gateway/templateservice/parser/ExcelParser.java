@@ -28,7 +28,14 @@ public class ExcelParser {
             List<String> headers = new ArrayList<>();
             for (int i = 0; i < headerRow.getLastCellNum(); i++) {
                 Cell c = headerRow.getCell(i);
-                String header = c == null ? "" : c.toString();
+                String header = "";
+                if (c != null) {
+                    if (c.getCellType() == CellType.STRING) {
+                        header = c.getStringCellValue();
+                    } else {
+                        header = c.toString();
+                    }
+                }
                 headers.add(header);
             }
             System.out.println("📊 ExcelParser: Headers found: " + headers);
@@ -38,7 +45,32 @@ public class ExcelParser {
                 Map<String, String> row = new LinkedHashMap<>();
                 for (int i = 0; i < headers.size(); i++) {
                     Cell c = r.getCell(i);
-                    row.put(headers.get(i), c == null ? "" : c.toString());
+                    String cellValue = "";
+                    if (c != null) {
+                        switch (c.getCellType()) {
+                            case NUMERIC:
+                                // Check if it's a whole number
+                                double numValue = c.getNumericCellValue();
+                                if (numValue == Math.floor(numValue)) {
+                                    cellValue = String.valueOf((long) numValue);
+                                } else {
+                                    cellValue = String.valueOf(numValue);
+                                }
+                                break;
+                            case STRING:
+                                cellValue = c.getStringCellValue();
+                                break;
+                            case BOOLEAN:
+                                cellValue = String.valueOf(c.getBooleanCellValue());
+                                break;
+                            case FORMULA:
+                                cellValue = c.getCellFormula();
+                                break;
+                            default:
+                                cellValue = c.toString();
+                        }
+                    }
+                    row.put(headers.get(i), cellValue);
                 }
                 out.add(row);
             }

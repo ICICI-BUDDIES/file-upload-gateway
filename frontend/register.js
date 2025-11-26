@@ -82,7 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div>
                         <select name="fieldType_${index}">
                             <option value="string">String</option>
-                            <option value="number">Number</option>
+                            <option value="integer">Integer</option>
+                            <option value="decimal">Decimal</option>
                             <option value="date">Date</option>
                             <option value="email">Email</option>
                         </select>
@@ -97,7 +98,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div>
                         <select name="fieldType_${header}">
                             <option value="string">String</option>
-                            <option value="number">Number</option>
+                            <option value="integer">Integer</option>
+                            <option value="decimal">Decimal</option>
                             <option value="date">Date</option>
                             <option value="email">Email</option>
                         </select>

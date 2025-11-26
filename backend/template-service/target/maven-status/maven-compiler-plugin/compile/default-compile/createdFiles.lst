@@ -10,6 +10,7 @@ com\gateway\templateservice\service\impl\TemplateServiceImpl.class
 com\gateway\templateservice\repository\TemplateRepository.class
 com\gateway\templateservice\parser\ExcelParser.class
 com\gateway\templateservice\model\TemplateEntity.class
+com\gateway\templateservice\parser\ExcelParser$1.class
 com\gateway\templateservice\config\DatabaseConfig$DevConfig.class
 com\gateway\templateservice\controller\RegistrationController$ValidationResponse.class
 com\gateway\templateservice\config\CorsConfig.class

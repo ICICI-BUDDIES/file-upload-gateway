@@ -14,9 +14,10 @@ public class FieldValidationService {
         "^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$"
     );
     
-    private static final Pattern NUMBER_PATTERN = Pattern.compile("^-?\\d+(\\.\\d+)?$");
+    private static final Pattern INTEGER_PATTERN = Pattern.compile("^-?\\d+(\\.0+)?$");
+    private static final Pattern DECIMAL_PATTERN = Pattern.compile("^-?\\d+(\\.\\d+)?$");
     private static final Pattern DATE_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$|^\\d{2}/\\d{2}/\\d{4}$|^\\d{2}-\\d{2}-\\d{4}$");
-    private static final Pattern SPECIAL_CHARS_PATTERN = Pattern.compile("[!@#$%^&*(),.?\":{}|<>]");
+    private static final Pattern SPECIAL_CHARS_PATTERN = Pattern.compile("[!@#$%^&*()\\[\\]{}|<>?/:;'\"~`]");
     
     private static final int MAX_ERRORS = 50;
 
@@ -80,8 +81,29 @@ public class FieldValidationService {
         
         // Field type validation (optimized with single pattern match)
         switch (fieldType.toLowerCase()) {
-            case "number":
-                if (!NUMBER_PATTERN.matcher(trimmedValue).matches()) {
+            case "integer":
+                if (!INTEGER_PATTERN.matcher(trimmedValue).matches()) {
+                    return String.format("Row %d: Field '%s' must be a valid integer (whole number), got '%s'", rowNumber, fieldName, value);
+                }
+                // Additional check: if it's a decimal like 1.0, ensure it's a whole number
+                if (trimmedValue.contains(".")) {
+                    try {
+                        double doubleValue = Double.parseDouble(trimmedValue);
+                        if (doubleValue != Math.floor(doubleValue)) {
+                            return String.format("Row %d: Field '%s' must be a whole number, got '%s'", rowNumber, fieldName, value);
+                        }
+                    } catch (NumberFormatException e) {
+                        return String.format("Row %d: Field '%s' must be a valid integer, got '%s'", rowNumber, fieldName, value);
+                    }
+                }
+                break;
+            case "decimal":
+                if (!DECIMAL_PATTERN.matcher(trimmedValue).matches()) {
+                    return String.format("Row %d: Field '%s' must be a valid decimal number, got '%s'", rowNumber, fieldName, value);
+                }
+                break;
+            case "number": // Keep for backward compatibility
+                if (!INTEGER_PATTERN.matcher(trimmedValue).matches() && !DECIMAL_PATTERN.matcher(trimmedValue).matches()) {
                     return String.format("Row %d: Field '%s' must be a valid number, got '%s'", rowNumber, fieldName, value);
                 }
                 break;
@@ -97,8 +119,8 @@ public class FieldValidationService {
                 break;
         }
         
-        // Special characters validation
-        if (!specialCharsAllowed && SPECIAL_CHARS_PATTERN.matcher(value).find()) {
+        // Special characters validation (skip for numeric and email fields)
+        if (!specialCharsAllowed && !fieldType.toLowerCase().matches("(integer|decimal|number|email)") && SPECIAL_CHARS_PATTERN.matcher(trimmedValue).find()) {
             return String.format("Row %d: Field '%s' contains special characters which are not allowed", rowNumber, fieldName);
         }
         

@@ -452,6 +452,8 @@ public class TemplateServiceImpl implements TemplateService {
         boolean specialCharsAllowed = (Boolean) rules.getOrDefault("specialChars", true);
         String fieldType = (String) rules.getOrDefault("fieldType", "string");
         
+        System.out.println(String.format("Validating field '%s' with value '%s', type '%s', specialCharsAllowed: %s", fieldName, value, fieldType, specialCharsAllowed));
+        
         boolean isEmpty = value == null || value.trim().isEmpty();
         
         // Required field validation
@@ -472,7 +474,29 @@ public class TemplateServiceImpl implements TemplateService {
         
         // Field type validation
         switch (fieldType.toLowerCase()) {
-            case "number":
+            case "integer":
+                // Check if it's a valid integer format (including Excel format like 1.0)
+                if (!trimmedValue.matches("^-?\\d+$") && !trimmedValue.matches("^-?\\d+\\.0+$")) {
+                    return String.format("Row %d: Field '%s' must be an integer (whole number) but contains '%s' in template", rowNumber, fieldName, value);
+                }
+                // Additional check: if it's a decimal like 1.0, ensure it's a whole number
+                if (trimmedValue.contains(".")) {
+                    try {
+                        double doubleValue = Double.parseDouble(trimmedValue);
+                        if (doubleValue != Math.floor(doubleValue)) {
+                            return String.format("Row %d: Field '%s' must be a whole number but contains '%s' in template", rowNumber, fieldName, value);
+                        }
+                    } catch (NumberFormatException e) {
+                        return String.format("Row %d: Field '%s' must be a valid integer but contains '%s' in template", rowNumber, fieldName, value);
+                    }
+                }
+                break;
+            case "decimal":
+                if (!trimmedValue.matches("^-?\\d+(\\.\\d+)?$")) {
+                    return String.format("Row %d: Field '%s' must be a decimal number but contains '%s' in template", rowNumber, fieldName, value);
+                }
+                break;
+            case "number": // Keep for backward compatibility
                 if (!trimmedValue.matches("^-?\\d+(\\.\\d+)?$")) {
                     return String.format("Row %d: Field '%s' must be a number but contains '%s' in template", rowNumber, fieldName, value);
                 }
@@ -489,8 +513,8 @@ public class TemplateServiceImpl implements TemplateService {
                 break;
         }
         
-        // Special characters validation (skip for number fields)
-        if (!specialCharsAllowed && !fieldType.toLowerCase().equals("number") && trimmedValue.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+        // Special characters validation (only when special characters are NOT allowed and field is not numeric/email)
+        if (!specialCharsAllowed && !fieldType.toLowerCase().matches("(number|integer|decimal|email)") && trimmedValue.matches(".*[!@#$%^&*()\\[\\]{}|<>?/:;'\"~`].*")) {
             return String.format("Row %d: Field '%s' contains special characters which are not allowed in template", rowNumber, fieldName);
         }
         
