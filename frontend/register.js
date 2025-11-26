@@ -226,6 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 showStatus("Registration successful!", "success");
                 showSuccessInfo(result.appNameHash, appName);
                 registrationForm.reset();
+                document.getElementById('headerConfigSection').style.display = 'none';
                 checkFormCompletion(); // Reset button state
             } else {
                 showStatus(`Registration failed: ${result.message}`, "error");
