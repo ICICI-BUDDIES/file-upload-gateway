@@ -151,9 +151,11 @@ template.service.url=http://localhost:8081
 
 ### User Interface
 - **Responsive Design**: Mobile-first approach with desktop optimization
-- **Accessibility**: WCAG compliant interface elements
+- **Accessibility**: WCAG compliant interface elements with required field indicators (*)
 - **Brand Consistency**: ICICI Bank visual identity
 - **Intuitive Workflow**: Step-by-step guided process
+- **Form Validation**: Clear visual indicators for mandatory fields with red asterisks
+- **Multi-language Support**: English and Hindi language switching with persistent field indicators
 
 ## 🔌 API Documentation
 
@@ -313,6 +315,8 @@ For technical support or questions:
 - **v1.4.1**: Template self-validation and enhanced error handling
 - **v1.4.2**: Excel parser improvements for integer/decimal handling
 - **v1.4.3**: Min/max length validation and field type separation
+- **v1.4.4**: UI improvements with required field indicators (*) and responsive table grids
+- **v1.4.5**: Enhanced accessibility with persistent asterisk indicators across language changes
 
 ---
 
