@@ -335,7 +335,7 @@ input[type="text"]:focus {
     background: #fafafa;
     border-radius: 8px;
     overflow: hidden;
-    table-layout: auto;
+    table-layout: fixed;
     min-width: 100%;
 }
 
@@ -347,6 +347,8 @@ input[type="text"]:focus {
     border: 1px solid #ddd;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    width: auto;
+    min-width: 80px;
 }
 
 .template-table th {
@@ -478,7 +480,7 @@ input[type="text"]:focus {
 }
 
 .registration-section {
-    padding: 1.5rem;
+    padding: 1.5rem 0.5rem;
 }
 
 .registration-form {
@@ -491,6 +493,7 @@ input[type="text"]:focus {
 /* Compact form styles */
 .compact-form {
     max-width: 700px;
+    margin: 0 auto;
 }
 
 .field-row {
@@ -616,20 +619,26 @@ input[type="text"]:focus {
     border-radius: 8px;
     overflow: hidden;
     font-size: 0.9rem;
+    width: 100%;
+    overflow-x: auto;
 }
 
 .grid-header {
     display: grid;
-    grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr;
+    grid-template-columns: minmax(150px, 2fr) minmax(120px, 1.5fr) minmax(80px, 1fr) minmax(80px, 1fr) minmax(80px, 1fr);
     background: #f36f21;
+    min-width: 530px;
 }
 
 .grid-header > div {
     color: white;
-    padding: 0.75rem;
+    padding: 0.75rem 0.5rem;
     font-weight: 600;
     text-align: center;
     border-right: 1px solid rgba(255,255,255,0.2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .grid-header > div:last-child {
@@ -638,8 +647,9 @@ input[type="text"]:focus {
 
 .header-row {
     display: grid;
-    grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr;
+    grid-template-columns: minmax(150px, 2fr) minmax(120px, 1.5fr) minmax(80px, 1fr) minmax(80px, 1fr) minmax(80px, 1fr);
     border-bottom: 1px solid #ddd;
+    min-width: 530px;
 }
 
 .header-row:last-child {
@@ -647,12 +657,13 @@ input[type="text"]:focus {
 }
 
 .header-row > div {
-    padding: 0.75rem;
+    padding: 0.75rem 0.5rem;
     background: white;
     border-right: 1px solid #ddd;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 50px;
 }
 
 .header-row > div:last-child {
@@ -662,6 +673,8 @@ input[type="text"]:focus {
 .header-row .header-name {
     justify-content: flex-start;
     font-weight: 500;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .header-row select {
@@ -776,8 +789,8 @@ input[type="text"]:focus {
     .upload-section,
     .registration-section {
         /* padding: 1.5rem; */
-        padding-left: 2rem;
-        padding-right: 2rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
         padding-bottom: 0.5rem;
         padding-top: 1.5rem;
     }
@@ -790,5 +803,32 @@ input[type="text"]:focus {
     .hash-display,
     .url-display {
         flex-direction: column;
+    }
+
+    .grid-header,
+    .header-row {
+        grid-template-columns: minmax(120px, 1.5fr) minmax(100px, 1fr) minmax(70px, 0.8fr) minmax(70px, 0.8fr) minmax(70px, 0.8fr);
+        min-width: 430px;
+    }
+
+    .grid-header > div,
+    .header-row > div {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.8rem;
+    }
+
+    .header-config-section {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .template-table {
+        font-size: 0.8rem;
+    }
+
+    .template-table th,
+    .template-table td {
+        padding: 6px 8px;
+        min-width: 60px;
     }
 }
