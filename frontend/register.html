@@ -59,23 +59,23 @@
                     <!-- Compact row for App Name and Template Display Name -->
                     <div class="field-row">
                         <div class="field-group half-width">
-                            <label for="appName">Application Name</label>
+                            <label for="appName">Application Name <span style="color: red;">*</span></label>
                             <input type="text" id="appName" placeholder="Enter app name" required>
                         </div>
                         <div class="field-group half-width">
-                            <label for="category">Template Display Name</label>
+                            <label for="category">Template Display Name <span style="color: red;">*</span></label>
                             <input type="text" id="category" placeholder="e.g., invoice, employee" required>
                         </div>
                     </div>
 
                     <div class="field-group">
-                        <label for="endpoint">Endpoint URL</label>
+                        <label for="endpoint">Endpoint URL <span style="color: red;">*</span></label>
                         <input type="url" id="endpoint" placeholder="https://your-app.com/api/receive-data" required>
                         <small>URL where validated data will be sent</small>
                     </div>
 
                     <div class="field-group">
-                        <label for="templateFile">Template File</label>
+                        <label for="templateFile">Template File <span style="color: red;">*</span></label>
                         <input type="file" id="templateFile" accept=".csv,.xls,.xlsx,.txt" required>
                         <small>Upload a sample template file (CSV, Excel, or Text)</small>
                     </div>
