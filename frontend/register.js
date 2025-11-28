@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function handleFileChange() {
         checkFormCompletion();
         const file = templateFileInput.files[0];
-        if (file && (file.name.endsWith('.csv') || file.name.endsWith('.xlsx'))) {
+        if (file && (file.name.endsWith('.csv') || file.name.endsWith('.xls') || file.name.endsWith('.xlsx') || file.name.endsWith('.txt'))) {
             await extractAndDisplayHeaders(file);
         } else {
             document.getElementById('headerConfigSection').style.display = 'none';

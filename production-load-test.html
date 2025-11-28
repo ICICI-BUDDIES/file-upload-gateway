@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Production Load Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .success { color: green; }
+        .error { color: red; }
+        .loading { color: orange; }
+        button { padding: 10px 20px; margin: 5px; }
+        #results { background: #f5f5f5; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🏭 Production Load Test Suite</h1>
+    
+    <div class="test-section">
+        <h3>Service Health Checks</h3>
+        <button onclick="checkHealth()">Check All Services</button>
+        <div id="health-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Template Registration Test</h3>
+        <input type="file" id="templateFile" accept=".csv,.txt,.xlsx">
+        <input type="text" id="appName" placeholder="App Name" value="TestApp">
+        <input type="text" id="category" placeholder="Category" value="employee">
+        <button onclick="registerTemplate()">Register Template</button>
+        <div id="register-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>File Upload Test</h3>
+        <input type="file" id="uploadFile" accept=".csv,.txt,.xlsx">
+        <button onclick="uploadFile()">Upload & Process File</button>
+        <div id="upload-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Load Test (Multiple Requests)</h3>
+        <button onclick="runLoadTest()">Run Load Test (10 concurrent requests)</button>
+        <div id="load-results"></div>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const TEMPLATE_SERVICE = 'http://localhost:8081';
+        const GATEWAY_SERVICE = 'http://localhost:8080';
+
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'loading';
+            results.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            results.scrollTop = results.scrollHeight;
+        }
+
+        async function checkHealth() {
+            const healthDiv = document.getElementById('health-results');
+            healthDiv.innerHTML = '<div class="loading">Checking services...</div>';
+            
+            try {
+                // Check Template Service
+                const templateResponse = await fetch(`${TEMPLATE_SERVICE}/actuator/health`);
+                const templateHealth = templateResponse.ok ? '✅ Healthy' : '❌ Unhealthy';
+                
+                // Check Gateway Service  
+                const gatewayResponse = await fetch(`${GATEWAY_SERVICE}/api/gateway/health`);
+                const gatewayHealth = gatewayResponse.ok ? '✅ Healthy' : '❌ Unhealthy';
+                
+                healthDiv.innerHTML = `
+                    <div>Template Service: ${templateHealth}</div>
+                    <div>Gateway Service: ${gatewayHealth}</div>
+                `;
+                
+                log('Health check completed', 'success');
+            } catch (error) {
+                healthDiv.innerHTML = '<div class="error">❌ Health check failed</div>';
+                log(`Health check error: ${error.message}`, 'error');
+            }
+        }
+
+        async function registerTemplate() {
+            const file = document.getElementById('templateFile').files[0];
+            const appName = document.getElementById('appName').value;
+            const category = document.getElementById('category').value;
+            const resultsDiv = document.getElementById('register-results');
+            
+            if (!file || !appName || !category) {
+                resultsDiv.innerHTML = '<div class="error">Please fill all fields and select a file</div>';
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div class="loading">Registering template...</div>';
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('appName', appName);
+                formData.append('category', category);
+                formData.append('endpoint', 'http://localhost:3000/receive-data');
+
+                const response = await fetch(`${TEMPLATE_SERVICE}/register`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultsDiv.innerHTML = `<div class="success">✅ Template registered: ${result.message}</div>`;
+                    log('Template registration successful', 'success');
+                } else {
+                    resultsDiv.innerHTML = `<div class="error">❌ Registration failed: ${result.message}</div>`;
+                    log('Template registration failed', 'error');
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                log(`Registration error: ${error.message}`, 'error');
+            }
+        }
+
+        async function uploadFile() {
+            const file = document.getElementById('uploadFile').files[0];
+            const resultsDiv = document.getElementById('upload-results');
+            
+            if (!file) {
+                resultsDiv.innerHTML = '<div class="error">Please select a file</div>';
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div class="loading">Processing file...</div>';
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('application', 'TestApp');
+                formData.append('category', 'employee');
+                formData.append('appNameHash', 'TestApp');
+
+                const response = await fetch(`${GATEWAY_SERVICE}/api/gateway/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultsDiv.innerHTML = `<div class="success">✅ File processed: ${result.message}</div>`;
+                    log('File upload successful', 'success');
+                } else {
+                    resultsDiv.innerHTML = `<div class="error">❌ Upload failed: ${result.message}</div>`;
+                    log('File upload failed', 'error');
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                log(`Upload error: ${error.message}`, 'error');
+            }
+        }
+
+        async function runLoadTest() {
+            const resultsDiv = document.getElementById('load-results');
+            resultsDiv.innerHTML = '<div class="loading">Running load test...</div>';
+            
+            log('Starting load test with 10 concurrent requests', 'loading');
+            
+            const promises = [];
+            const startTime = Date.now();
+            
+            for (let i = 0; i < 10; i++) {
+                promises.push(
+                    fetch(`${TEMPLATE_SERVICE}/actuator/health`)
+                        .then(response => ({ success: response.ok, id: i + 1 }))
+                        .catch(error => ({ success: false, id: i + 1, error: error.message }))
+                );
+            }
+            
+            try {
+                const results = await Promise.all(promises);
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                const successful = results.filter(r => r.success).length;
+                const failed = results.length - successful;
+                
+                resultsDiv.innerHTML = `
+                    <div class="success">✅ Load test completed in ${duration}ms</div>
+                    <div>Successful requests: ${successful}/10</div>
+                    <div>Failed requests: ${failed}/10</div>
+                `;
+                
+                log(`Load test completed: ${successful}/10 successful in ${duration}ms`, 'success');
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Load test failed: ${error.message}</div>`;
+                log(`Load test error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-check health on page load
+        window.onload = function() {
+            log('Production Load Test Suite initialized', 'success');
+            setTimeout(checkHealth, 1000);
+        };
+    </script>
+</body>
+</html>

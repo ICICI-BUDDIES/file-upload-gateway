@@ -5,7 +5,7 @@ import com.gateway.templateservice.dto.RegistrationResponse;
 import com.gateway.templateservice.dto.TemplateMetadataResponse;
 import com.gateway.templateservice.dto.TemplateResponse;
 import com.gateway.templateservice.util.HashUtil;
-import com.gateway.templateservice.model.StructureRules;
+
 import com.gateway.templateservice.model.TemplateEntity;
 import com.gateway.templateservice.parser.CSVParser;
 import com.gateway.templateservice.parser.PipeParser;
@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.util.*;
 
-@Service
 public class TemplateServiceImpl implements TemplateService {
 
     @Autowired
@@ -370,8 +369,8 @@ public class TemplateServiceImpl implements TemplateService {
             String ext = getExt(file.getOriginalFilename());
             System.out.println("🔍 Extracting headers from file: " + file.getOriginalFilename() + ", extension: " + ext);
             
-            if (!ext.equals("csv") && !ext.equals("xlsx")) {
-                throw new RuntimeException("Only CSV and XLSX files are supported for header extraction");
+            if (!ext.equals("csv") && !ext.equals("xls") && !ext.equals("xlsx") && !ext.equals("txt")) {
+                throw new RuntimeException("Only CSV, XLS, XLSX, and TXT files are supported for header extraction");
             }
             
             byte[] bytes = file.getBytes();

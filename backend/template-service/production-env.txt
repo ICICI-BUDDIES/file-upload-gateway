@@ -1,0 +1,10 @@
+# Environment Variables for Production Deployment
+# Set these in your production environment
+
+SPRING_PROFILES_ACTIVE=prod
+DB_HOST=your-mssql-server-ip
+DB_PORT=1433
+DB_NAME=templatedb
+DB_USERNAME=sa
+DB_PASSWORD=your-database-password
+SERVER_PORT=8081

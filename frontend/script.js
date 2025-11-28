@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         templateNameEl.textContent = `${category} Template (${metadata.fileType.toUpperCase()})`;
 
-                        // Render full template as table
+                        // Render full template as table - works for all formats including .xls
                         renderTemplateTable(templateData);
                     });
             })
@@ -218,6 +218,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!category) {
             uploadStatus.textContent = "Please select a category first.";
+            uploadStatus.className = "status-message error";
+            return;
+        }
+
+        // Validate file type - ensure .xls files are accepted
+        const fileName = file.name.toLowerCase();
+        const allowedExtensions = ['.csv', '.xls', '.xlsx', '.txt'];
+        const isValidFile = allowedExtensions.some(ext => fileName.endsWith(ext));
+        
+        if (!isValidFile) {
+            uploadStatus.textContent = "Please select a valid file type (.csv, .xls, .xlsx, or .txt).";
             uploadStatus.className = "status-message error";
             return;
         }

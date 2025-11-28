@@ -1,0 +1,38 @@
+DATABASE REQUIREMENTS FOR DEPLOYMENT
+=====================================
+
+DATABASE TYPE: Microsoft SQL Server (MSSQL)
+
+WHAT WE NEED:
+1. One MSSQL database named: templatedb
+2. Database user with full access to this database
+
+SETUP SCRIPT:
+Run this SQL on your MSSQL Server:
+
+CREATE DATABASE templatedb;
+GO
+USE templatedb;
+GO
+
+-- Create user (or use existing sa account)
+CREATE LOGIN template_user WITH PASSWORD = 'YourPassword123!';
+CREATE USER template_user FOR LOGIN template_user;
+ALTER ROLE db_owner ADD MEMBER template_user;
+GO
+
+WHAT THE APPLICATION DOES:
+- Creates tables automatically when it starts
+- No manual table creation needed
+- Just needs empty database
+
+TABLES CREATED AUTOMATICALLY:
+- template_entity (stores file templates)
+- Other system tables as needed
+
+CONNECTION DETAILS NEEDED:
+- Database Server IP/Host
+- Database Port (usually 1433)
+- Database Name: templatedb
+- Username: template_user (or sa)
+- Password: (whatever you set)

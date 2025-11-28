@@ -1,12 +1,12 @@
 spring:
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=templatedb;encrypt=true;trustServerCertificate=true
+    url: jdbc:sqlserver://${DB_HOST:localhost}:${DB_PORT:1433};databaseName=${DB_NAME:templatedb};encrypt=true;trustServerCertificate=true
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD:password}
+    password: ${DB_PASSWORD}
   
   jpa:
     database-platform: org.hibernate.dialect.SQLServer2012Dialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: false

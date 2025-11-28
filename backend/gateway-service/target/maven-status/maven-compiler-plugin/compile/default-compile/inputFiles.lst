@@ -1,16 +1,15 @@
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\config\DatabaseConfig.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\dto\UploadResponse.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\dto\TemplateDefinition.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\service\StructureValidationService.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\controller\TestEndpointController.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\dto\ExtractedFile.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\dto\StructureRules.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\GatewayServiceApplication.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\service\FieldValidationService.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\util\FileTypeUtil.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\controller\FileGatewayController.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\service\ExtractionService.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\config\CorsConfig.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\service\FileValidationService.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\service\TemplateLookupService.java
-c:\Users\KAVYA\Desktop\hello world\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\service\EndpointNotificationService.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\service\FieldValidationService.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\util\FileTypeUtil.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\dto\StructureRules.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\config\DatabaseConfig.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\dto\TemplateDefinition.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\service\EndpointNotificationService.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\dto\UploadResponse.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\service\ExtractionService.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\service\TemplateLookupService.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\GatewayServiceApplication.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\service\FileValidationService.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\service\StructureValidationService.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\controller\FileGatewayController.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\config\CorsConfig.java
+e:\webs\FILE-UPLOAD\file-upload-gateway\backend\gateway-service\src\main\java\com\example\gateway\dto\ExtractedFile.java

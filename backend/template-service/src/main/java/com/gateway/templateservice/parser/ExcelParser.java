@@ -10,10 +10,11 @@ public class ExcelParser {
         List<Map<String, String>> out = new ArrayList<>();
         
         try {
-            System.out.println("📊 ExcelParser: Starting to parse Excel file");
+            System.out.println("📊 ExcelParser: Starting to parse Excel file (.xls/.xlsx)");
             
+            // WorkbookFactory.create() automatically detects .xls vs .xlsx format
             Workbook wb = WorkbookFactory.create(is);
-            System.out.println("📊 ExcelParser: Workbook created successfully");
+            System.out.println("📊 ExcelParser: Workbook created successfully - Type: " + wb.getClass().getSimpleName());
             
             Sheet sheet = wb.getSheetAt(0);
             System.out.println("📊 ExcelParser: Got first sheet: " + sheet.getSheetName());

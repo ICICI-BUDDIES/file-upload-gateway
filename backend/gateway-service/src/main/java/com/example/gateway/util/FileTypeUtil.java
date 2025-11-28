@@ -11,7 +11,8 @@ public class FileTypeUtil {
 
         if (name.endsWith(".csv")) return "csv";
         if (name.endsWith(".txt")) return "txt";
-        if (name.endsWith(".xlsx") || name.endsWith(".xls")) return "xlsx";
+        if (name.endsWith(".xlsx")) return "xlsx";
+        if (name.endsWith(".xls")) return "xls";
 
         return "unknown";
     }

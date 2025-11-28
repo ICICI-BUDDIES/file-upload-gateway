@@ -9,25 +9,63 @@
 </head>
 
 <body>
+    <header class="icici-header">
+        <div class="icici-header-inner">
+            <!-- LEFT SECTION -->
+            <div class="header-left">
+                <a href="https://www.icicibank.com/" target="_blank" rel="noopener noreferrer">
+                    <img class="icici-logo" src="ICICI_HeaderLogo (1).png" alt="Organiser banner logo" />
+                </a>
+                <span class="app-name">Template Registration - File Upload Gateway</span>
+            </div>
 
+            <!-- RIGHT SECTION -->
+            <div class="header-right">
+                <!-- 1800 1080 phone -->
+                <div class="support-block">
+                    <img src="Frame 1410086205-3.png" alt="Support Phone" onclick="handlePhoneClick()" style="cursor: pointer;" title="Call or Copy: 1800 108 010" />
+                </div>
+
+                <!-- Country Selector -->
+                <div class="country-select">
+                    <select id="countrySelect" onchange="changeCountry(this.value)">
+                        <option value="india-en">🇮🇳 INDIA (ENGLISH)</option>
+                        <option value="india-hi">🇮🇳 INDIA (हिंदी)</option>
+                        <option value="bahrain">🇧🇭 BAHRAIN</option>
+                        <option value="canada">🇨🇦 CANADA</option>
+                        <option value="china">🇨🇳 CHINA</option>
+                        <option value="germany">🇩🇪 GERMANY</option>
+                        <option value="hongkong">🇭🇰 HONG KONG</option>
+                        <option value="singapore">🇸🇬 SINGAPORE</option>
+                        <option value="uk">🇬🇧 UNITED KINGDOM</option>
+                        <option value="usa">🇺🇸 UNITED STATES</option>
+                        <option value="uae">🇦🇪 DIFC-UAE</option>
+                        <option value="europe">🇪🇺 EUROPE</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
 
     <main class="container">
-        <div class="card">
+        <div class="card compact-form">
             <section class="registration-section">
-                <!-- <h2>Register New App Template</h2>
-                <p>Register your application with a template to enable file upload validation.</p> -->
-
                 <form id="registrationForm" class="registration-form">
-                    <h2>Register New App Template</h2>
-                    <p>Register your application with a template to enable file upload.</p>
-                    <div class="field-group">
-                        <label for="appName">Application Name</label>
-                        <input type="text" id="appName" placeholder="Enter your application name" required>
+                    <div class="form-header">
+                        <h2>Register New App Template</h2>
+                        <p>Register your application with a template to enable file upload.</p>
                     </div>
-
-                    <div class="field-group">
-                        <label for="category">Template Display Name</label>
-                        <input type="text" id="category" placeholder="e.g., invoice, employee, bankstatement" required>
+                    
+                    <!-- Compact row for App Name and Template Display Name -->
+                    <div class="field-row">
+                        <div class="field-group half-width">
+                            <label for="appName">Application Name</label>
+                            <input type="text" id="appName" placeholder="Enter app name" required>
+                        </div>
+                        <div class="field-group half-width">
+                            <label for="category">Template Display Name</label>
+                            <input type="text" id="category" placeholder="e.g., invoice, employee" required>
+                        </div>
                     </div>
 
                     <div class="field-group">
@@ -38,7 +76,7 @@
 
                     <div class="field-group">
                         <label for="templateFile">Template File</label>
-                        <input type="file" id="templateFile" accept=".csv,.xlsx,.txt" required>
+                        <input type="file" id="templateFile" accept=".csv,.xls,.xlsx,.txt" required>
                         <small>Upload a sample template file (CSV, Excel, or Text)</small>
                     </div>
 
@@ -84,6 +122,40 @@
         </div>
     </main>
 
+    <script>
+        // Handle phone click - dial on mobile, copy on desktop
+        function handlePhoneClick() {
+            const phoneNumber = '1800 108 010';
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                window.location.href = 'tel:+911800108010';
+            } else {
+                navigator.clipboard.writeText(phoneNumber).then(() => {
+                    showToast('Phone number copied to clipboard: ' + phoneNumber, 'success');
+                }).catch(() => {
+                    alert('Phone number: ' + phoneNumber);
+                });
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            // Simple alert for now, can be enhanced later
+            alert(message);
+        }
+
+        // Country selector functionality (basic)
+        function changeCountry(country) {
+            localStorage.setItem('selectedCountry', country);
+        }
+
+        // Load saved country on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedCountry = localStorage.getItem('selectedCountry') || 'india-en';
+            document.getElementById('countrySelect').value = savedCountry;
+        });
+    </script>
     <script src="register.js"></script>
 </body>
 

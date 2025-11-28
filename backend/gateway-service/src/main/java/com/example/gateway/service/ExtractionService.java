@@ -7,6 +7,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,8 +35,10 @@ public class ExtractionService {
                 return extractTxt(file.getInputStream(), delimiter);
 
             case "xlsx":
+                return extractExcel(file.getInputStream(), false);
+
             case "xls":
-                return extractExcel(file.getInputStream());
+                return extractExcel(file.getInputStream(), true);
 
             default:
                 return extractCsv(file.getInputStream(), ',');
@@ -49,7 +52,8 @@ public class ExtractionService {
 
         if (name.endsWith(".csv")) return "csv";
         if (name.endsWith(".txt")) return "txt";
-        if (name.endsWith(".xlsx") || name.endsWith(".xls")) return "xlsx";
+        if (name.endsWith(".xlsx")) return "xlsx";
+        if (name.endsWith(".xls")) return "xls";
 
         return "csv";
     }
@@ -153,12 +157,12 @@ public class ExtractionService {
     // ===========================================================
     //  EXCEL HANDLING (.xlsx)
     // ===========================================================
-    private ExtractedFile extractExcel(InputStream is) throws IOException {
+    private ExtractedFile extractExcel(InputStream is, boolean isXls) throws IOException {
 
         List<String> headers = new ArrayList<>();
         List<Map<String, Object>> rows = new ArrayList<>();
 
-        Workbook workbook = new XSSFWorkbook(is);
+        Workbook workbook = isXls ? new HSSFWorkbook(is) : new XSSFWorkbook(is);
 
         try {
             Sheet sheet = workbook.getSheetAt(0);

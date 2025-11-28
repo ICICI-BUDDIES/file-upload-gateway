@@ -4,7 +4,6 @@ com\gateway\templateservice\storage\TemplateStorage.class
 com\gateway\templateservice\config\DatabaseConfig$ProdConfig.class
 com\gateway\templateservice\config\DatabaseConfig.class
 com\gateway\templateservice\parser\CSVParser.class
-com\gateway\templateservice\model\StructureRules.class
 com\gateway\templateservice\dto\RegistrationResponse.class
 com\gateway\templateservice\service\impl\TemplateServiceImpl.class
 com\gateway\templateservice\repository\TemplateRepository.class
