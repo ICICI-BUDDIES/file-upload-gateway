@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Registration - File Upload Gateway</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="icici-header">
+        <div class="icici-header-inner">
+            <!-- LEFT SECTION -->
+            <div class="header-left">
+                <a href="https://www.icicibank.com/" target="_blank" rel="noopener noreferrer">
+                    <img class="icici-logo" src="ICICI_HeaderLogo (1).png" alt="Organiser banner logo" />
+                </a>
+                <span class="app-name">Template Registration - File Upload Gateway</span>
+            </div>
+
+            <!-- RIGHT SECTION -->
+            <div class="header-right">
+                <!-- 1800 1080 phone -->
+                <div class="support-block">
+                    <img src="Frame 1410086205-3.png" alt="Support Phone" onclick="handlePhoneClick()" style="cursor: pointer;" title="Call or Copy: 1800 108 010" />
+                </div>
+
+                <!-- Country Selector -->
+                <div class="country-select">
+                    <select id="countrySelect" onchange="changeCountry(this.value)">
+                        <option value="india-en">🇮🇳 INDIA (ENGLISH)</option>
+                        <option value="india-hi">🇮🇳 INDIA (हिंदी)</option>
+                        <option value="bahrain">🇧🇭 BAHRAIN</option>
+                        <option value="canada">🇨🇦 CANADA</option>
+                        <option value="china">🇨🇳 CHINA</option>
+                        <option value="germany">🇩🇪 GERMANY</option>
+                        <option value="hongkong">🇭🇰 HONG KONG</option>
+                        <option value="singapore">🇸🇬 SINGAPORE</option>
+                        <option value="uk">🇬🇧 UNITED KINGDOM</option>
+                        <option value="usa">🇺🇸 UNITED STATES</option>
+                        <option value="uae">🇦🇪 DIFC-UAE</option>
+                        <option value="europe">🇪🇺 EUROPE</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card compact-form">
+            <section class="registration-section">
+                <form id="registrationForm" class="registration-form">
+                    <div class="form-header">
+                        <h2>Register New App Template</h2>
+                        <p>Register your application with a template to enable file upload.</p>
+                    </div>
+                    
+                    <!-- Compact row for App Name and Template Display Name -->
+                    <div class="field-row">
+                        <div class="field-group half-width">
+                            <label for="appName">Application Name <span style="color: red;">*</span></label>
+                            <input type="text" id="appName" placeholder="Enter app name" required>
+                        </div>
+                        <div class="field-group half-width">
+                            <label for="category">Template Display Name <span style="color: red;">*</span></label>
+                            <input type="text" id="category" placeholder="e.g., invoice, employee" required>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="endpoint">Endpoint URL <span style="color: red;">*</span></label>
+                        <input type="url" id="endpoint" placeholder="https://your-app.com/api/receive-data" required>
+                        <small>URL where validated data will be sent</small>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="templateFile">Template File <span style="color: red;">*</span></label>
+                        <input type="file" id="templateFile" accept=".csv,.xls,.xlsx,.txt" required>
+                        <small>Upload a sample template file (CSV, Excel, or Text)</small>
+                    </div>
+
+                    <!-- Header Configuration Section -->
+                    <div id="headerConfigSection" class="header-config-section" style="display: none;">
+                        <h3>Configure Field Properties</h3>
+                        <div id="headerGrid" class="header-grid">
+                            <div class="grid-header">
+                                <div>Header</div>
+                                <div>Field Type <span class="info-icon" title="String: Any text or alphanumeric (names, addresses, mixed IDs)&#10;Integer: Whole numbers only (age, count, ID numbers)&#10;Decimal: Numbers with decimal points (salary, price, percentage)&#10;Date: All date fields (DOB, joining date)&#10;Email: String with email validation">ℹ️</span></div>
+                                <div>Null Allowed</div>
+                                <div>Required</div>
+                                <div>Special Characters</div>
+                            </div>
+                            <div id="headerRows"></div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-register btn-faded">Register Template</button>
+                </form>
+
+                <div id="registrationStatus" class="status-message"></div>
+
+                <div id="successInfo" class="success-info" style="display: none;">
+                    <h3>Registration Successful!</h3>
+                    <div class="app-hash-info">
+                        <label>Your App Hash (save this):</label>
+                        <div class="hash-display">
+                            <input type="text" id="appHashDisplay" readonly>
+                            <button type="button" id="copyHashBtn" class="btn-copy">Copy</button>
+                        </div>
+                    </div>
+                    <div class="integration-info">
+                        <h4>Integration URL:</h4>
+                        <div class="url-display">
+                            <input type="text" id="integrationUrl" readonly>
+                            <button type="button" id="copyUrlBtn" class="btn-copy">Copy</button>
+                        </div>
+                        <p><strong>Use this URL to integrate the file upload utility into your application.</strong></p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // Handle phone click - dial on mobile, copy on desktop
+        function handlePhoneClick() {
+            const phoneNumber = '1800 108 010';
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                window.location.href = 'tel:+911800108010';
+            } else {
+                navigator.clipboard.writeText(phoneNumber).then(() => {
+                    showToast('Phone number copied to clipboard: ' + phoneNumber, 'success');
+                }).catch(() => {
+                    alert('Phone number: ' + phoneNumber);
+                });
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            // Simple alert for now, can be enhanced later
+            alert(message);
+        }
+
+        // Country selector functionality (basic)
+        function changeCountry(country) {
+            localStorage.setItem('selectedCountry', country);
+        }
+
+        // Load saved country on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedCountry = localStorage.getItem('selectedCountry') || 'india-en';
+            document.getElementById('countrySelect').value = savedCountry;
+        });
+    </script>
+    <script src="register.js"></script>
+</body>
+
+</html>
