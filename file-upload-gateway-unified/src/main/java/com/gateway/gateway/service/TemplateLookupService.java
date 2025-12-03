@@ -1,27 +1,28 @@
 package com.gateway.gateway.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gateway.gateway.dto.TemplateDefinition;
-import org.springframework.beans.factory.annotation.Value;
+import com.gateway.template.model.TemplateEntity;
+import com.gateway.template.storage.TemplateStorage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
-import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Service
 public class TemplateLookupService {
 
-    @Value("${template.service.url}")
-    private String templateServiceUrl;
-
-    private final RestTemplate rest = new RestTemplate();
+    @Autowired
+    private TemplateStorage templateStorage;
+    
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /** --------------------------------------------------------------
-     * 1. Fetch ALL template entities from Template-Service
+     * 1. Fetch ALL template entities from database
      * -------------------------------------------------------------- */
     public Object fetchAllTemplatesRaw() {
-        String url = templateServiceUrl + "/templates";
-        return rest.getForObject(url, Object.class);
+        return templateStorage.findAll();
     }
 
     /** --------------------------------------------------------------
@@ -53,12 +54,43 @@ public class TemplateLookupService {
      * 3. Fetch metadata for app-specific template
      * -------------------------------------------------------------- */
     public TemplateDefinition fetchAppTemplate(String appNameHash, String category) {
-        String url = templateServiceUrl + "/templates/app/" + appNameHash + "/" + category + "/metadata";
-        
-        System.out.println("➡ Fetching app template metadata from: " + url);
+        System.out.println("➡ Fetching app template metadata for: " + appNameHash + "/" + category);
         
         try {
-            return rest.getForObject(url, TemplateDefinition.class);
+            TemplateEntity template = templateStorage.findByAppHashAndCategory(appNameHash, category);
+            if (template == null) {
+                throw new RuntimeException("Template not found");
+            }
+            
+            TemplateDefinition def = new TemplateDefinition();
+            def.setTemplateName(template.getCategory());
+            def.setFileType(template.getFileType());
+            
+            if (template.getMetadataJson() != null) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> metadata = objectMapper.readValue(template.getMetadataJson(), Map.class);
+                
+                // Set headers
+                if (metadata.containsKey("headers")) {
+                    @SuppressWarnings("unchecked")
+                    List<String> headers = (List<String>) metadata.get("headers");
+                    def.setHeaders(headers);
+                }
+                
+                // Set structure rules (includes both rules and fieldConfig)
+                Map<String, Object> allRules = new java.util.HashMap<>();
+                if (metadata.containsKey("rules")) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> basicRules = (Map<String, Object>) metadata.get("rules");
+                    allRules.putAll(basicRules);
+                }
+                if (metadata.containsKey("fieldConfig")) {
+                    allRules.put("fieldConfig", metadata.get("fieldConfig"));
+                }
+                def.setStructureRules(allRules);
+            }
+            
+            return def;
         } catch (Exception e) {
             throw new RuntimeException("Failed to fetch app template metadata: " + e.getMessage());
         }
@@ -68,13 +100,13 @@ public class TemplateLookupService {
      * 4. Fetch categories for specific app
      * -------------------------------------------------------------- */
     public List<String> fetchAppCategories(String appNameHash) {
-        String url = templateServiceUrl + "/templates/app/" + appNameHash + "/categories";
-        
-        System.out.println("➡ Fetching app categories from: " + url);
+        System.out.println("➡ Fetching app categories for: " + appNameHash);
         
         try {
-            String[] categories = rest.getForObject(url, String[].class);
-            return categories != null ? Arrays.asList(categories) : Collections.emptyList();
+            List<TemplateEntity> templates = templateStorage.findByAppHash(appNameHash);
+            return templates.stream()
+                    .map(TemplateEntity::getCategory)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException("Failed to fetch app categories: " + e.getMessage());
         }
@@ -85,12 +117,29 @@ public class TemplateLookupService {
      * -------------------------------------------------------------- */
     @Deprecated
     public TemplateDefinition fetchTemplate(String category) {
-        String url = templateServiceUrl + "/templates/" + category + "/metadata";
-        
-        System.out.println("➡ Fetching template metadata from: " + url);
+        System.out.println("➡ Fetching template metadata for category: " + category);
         
         try {
-            return rest.getForObject(url, TemplateDefinition.class);
+            TemplateEntity template = templateStorage.findByCategory(category);
+            if (template == null) {
+                throw new RuntimeException("Template not found");
+            }
+            
+            TemplateDefinition def = new TemplateDefinition();
+            def.setTemplateName(template.getCategory());
+            def.setFileType(template.getFileType());
+            
+            if (template.getMetadataJson() != null) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> metadata = objectMapper.readValue(template.getMetadataJson(), Map.class);
+                if (metadata.containsKey("structureRules")) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> rules = (Map<String, Object>) metadata.get("structureRules");
+                    def.setStructureRules(rules);
+                }
+            }
+            
+            return def;
         } catch (Exception e) {
             throw new RuntimeException("Failed to fetch template metadata: " + e.getMessage());
         }

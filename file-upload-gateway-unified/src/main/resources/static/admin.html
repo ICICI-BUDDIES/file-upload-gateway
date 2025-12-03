@@ -33,7 +33,7 @@
                         <p>Test how external apps integrate with the utility</p>
                     </a>
 
-                    <a href="http://localhost:8080/h2-console" target="_blank" class="admin-link">
+                    <a href="/h2-console" target="_blank" class="admin-link">
                         <h3>🗄️ Database Console</h3>
                         <p>View registered templates in H2 database</p>
                         <small>JDBC URL: jdbc:h2:mem:templatedb | User: sa</small>
@@ -61,7 +61,7 @@
         // Check service status
         async function checkServiceStatus() {
             try {
-                const templateResponse = await fetch('http://localhost:8080/api/templates');
+                const templateResponse = await fetch(`${window.location.origin}/api/templates`);
                 document.getElementById('templateServiceStatus').textContent = '✅ Running';
                 document.getElementById('templateServiceStatus').className = 'status-indicator success';
             } catch {
@@ -70,7 +70,7 @@
             }
 
             try {
-                const gatewayResponse = await fetch('http://localhost:8080/api/gateway/status');
+                const gatewayResponse = await fetch(`${window.location.origin}/api/gateway/status`);
                 document.getElementById('gatewayServiceStatus').textContent = '✅ Running';
                 document.getElementById('gatewayServiceStatus').className = 'status-indicator success';
             } catch {

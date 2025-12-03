@@ -335,8 +335,8 @@ input[type="text"]:focus {
     background: #fafafa;
     border-radius: 8px;
     overflow: hidden;
-    table-layout: fixed;
-    min-width: 100%;
+    table-layout: auto;
+    min-width: max-content;
 }
 
 .template-table th,

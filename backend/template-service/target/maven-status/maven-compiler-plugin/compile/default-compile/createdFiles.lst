@@ -1,3 +1,4 @@
+com\gateway\templateservice\config\ServiceConfig.class
 com\gateway\templateservice\controller\TemplateController.class
 com\gateway\templateservice\TemplateServiceApplication.class
 com\gateway\templateservice\storage\TemplateStorage.class

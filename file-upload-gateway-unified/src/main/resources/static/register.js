@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const API_BASE_URL = window.location.origin;
     const registrationForm = document.getElementById("registrationForm");
     const registrationStatus = document.getElementById("registrationStatus");
     const successInfo = document.getElementById("successInfo");
@@ -34,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function handleFileChange() {
         checkFormCompletion();
         const file = templateFileInput.files[0];
-        if (file && (file.name.endsWith('.csv') || file.name.endsWith('.xls') || file.name.endsWith('.xlsx') || file.name.endsWith('.txt'))) {
+        if (file && (file.name.endsWith('.csv') || file.name.endsWith('.xls') || file.name.endsWith('.xlsx') || file.name.endsWith('.txt') || file.name.endsWith('.psv'))) {
             await extractAndDisplayHeaders(file);
         } else {
             document.getElementById('headerConfigSection').style.display = 'none';
@@ -46,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const formData = new FormData();
             formData.append('file', file);
             
-            const response = await fetch('http://localhost:8080/api/templates/extract-headers', {
+            const response = await fetch(`${API_BASE_URL}/api/templates/extract-headers`, {
                 method: 'POST',
                 body: formData
             });
@@ -154,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
             formData.append('file', templateFile);
             formData.append('fieldConfig', JSON.stringify(headerConfig));
             
-            const response = await fetch('http://localhost:8080/api/templates/validate-template', {
+            const response = await fetch(`${API_BASE_URL}/api/templates/validate-template`, {
                 method: 'POST',
                 body: formData
             });
@@ -217,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         try {
-            const response = await fetch("http://localhost:8080/api/templates", {
+            const response = await fetch(`${API_BASE_URL}/api/templates`, {
                 method: "POST",
                 body: formData
             });

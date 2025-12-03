@@ -15,7 +15,8 @@ public class TxtParser {
         char delimiter = detectDelimiter(firstLine);
         
         // Parse headers from first line
-        String[] headers = firstLine.split(String.valueOf(delimiter), -1);
+        String delimiterRegex = delimiter == '|' ? "\\|" : String.valueOf(delimiter);
+        String[] headers = firstLine.split(delimiterRegex, -1);
         for (int i = 0; i < headers.length; i++) {
             headers[i] = headers[i].trim();
         }
@@ -25,7 +26,7 @@ public class TxtParser {
         while ((line = br.readLine()) != null) {
             if (line.trim().isEmpty()) continue;
             
-            String[] cols = line.split(String.valueOf(delimiter), -1);
+            String[] cols = line.split(delimiterRegex, -1);
             Map<String, String> row = new LinkedHashMap<>();
             for (int i = 0; i < headers.length; i++) {
                 String key = headers[i];

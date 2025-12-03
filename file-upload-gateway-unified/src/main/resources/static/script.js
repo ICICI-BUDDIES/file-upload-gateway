@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const API_BASE_URL = window.location.origin;
     // Get app name hash from URL
     const urlParams = new URLSearchParams(window.location.search);
     const appNameHash = urlParams.get('app');
@@ -33,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         loadingOption.selected = true;
         categorySelect.appendChild(loadingOption);
 
-        fetch(`http://localhost:8080/api/templates/app/${appNameHash}/categories`)
+        fetch(`${API_BASE_URL}/api/templates/app/${appNameHash}/categories`)
             .then((response) => {
                 if (!response.ok) throw new Error("Network response was not ok");
                 return response.json();
@@ -87,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         // Fetch full template data using app-specific endpoint
-        const url = `http://localhost:8080/api/templates/app/${appNameHash}/${encodeURIComponent(category)}/json`;
+        const url = `${API_BASE_URL}/api/templates/app/${appNameHash}/${encodeURIComponent(category)}/json`;
 
         fetch(url)
             .then((response) => {
@@ -96,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then((templateData) => {
                 // Also fetch metadata to get file type
-                return fetch(`http://localhost:8080/api/templates/app/${appNameHash}/${encodeURIComponent(category)}/metadata`)
+                return fetch(`${API_BASE_URL}/api/templates/app/${appNameHash}/${encodeURIComponent(category)}/metadata`)
                     .then(response => response.json())
                     .then(metadata => {
                         currentTemplate = {
@@ -121,12 +122,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderTemplateTable(data) {
+        console.log('renderTemplateTable called with data:', data);
+        console.log('Data type:', typeof data);
+        console.log('Is Array:', Array.isArray(data));
+        
         if (!Array.isArray(data) || data.length === 0) {
             headerPreview.innerHTML = '<span class="placeholder-text">No template data available</span>';
             return;
         }
 
         const headers = Object.keys(data[0]);
+        console.log('Headers extracted:', headers);
 
         let tableHTML = '<table class="template-table">';
 
@@ -169,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
         downloadBtn.disabled = true;
         downloadBtn.textContent = "Downloading...";
 
-        const url = `http://localhost:8080/api/templates/app/${currentTemplate.appNameHash}/${encodeURIComponent(currentTemplate.category)}/download`;
+        const url = `${API_BASE_URL}/api/templates/app/${currentTemplate.appNameHash}/${encodeURIComponent(currentTemplate.category)}/download`;
 
         fetch(url)
             .then((response) => {
@@ -242,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
         uploadBtn.disabled = true;
         uploadBtn.textContent = "Uploading...";
 
-        fetch("http://localhost:8080/api/gateway/upload", {
+        fetch(`${API_BASE_URL}/api/gateway/upload`, {
             method: "POST",
             body: formData
         })

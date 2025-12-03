@@ -1,6 +1,8 @@
 package com.gateway.gateway.service;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.gateway.template.storage.TemplateStorage;
+import com.gateway.template.model.TemplateEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,14 +15,13 @@ import java.util.Map;
 @Service
 public class EndpointNotificationService {
 
-    @Value("${template.service.url}")
-    private String templateServiceUrl;
+    @Autowired
+    private TemplateStorage templateStorage;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
     public boolean sendDataToAppEndpoint(String appNameHash, String category, List<Map<String, Object>> extractedData) {
         try {
-            // First, get the app's registered endpoint
             String endpointUrl = getAppEndpoint(appNameHash, category);
             
             if (endpointUrl == null || endpointUrl.trim().isEmpty()) {
@@ -28,7 +29,6 @@ public class EndpointNotificationService {
                 return false;
             }
             
-            // Send the extracted data to the app's endpoint
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             
@@ -50,16 +50,8 @@ public class EndpointNotificationService {
     
     private String getAppEndpoint(String appNameHash, String category) {
         try {
-            String url = templateServiceUrl + "/templates/app/" + appNameHash + "/" + category + "/metadata";
-            
-            // Fetch template metadata which contains the endpoint
-            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-            
-            if (response != null && response.containsKey("endpoint")) {
-                return (String) response.get("endpoint");
-            }
-            
-            return null;
+            TemplateEntity template = templateStorage.findByAppHashAndCategory(appNameHash, category);
+            return template != null ? template.getEndpoint() : null;
         } catch (Exception e) {
             System.err.println("Failed to get app endpoint: " + e.getMessage());
             return null;
